@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Danjiri Sim | だんじり曳行シミュレーター</title>
+<meta name="description" content="だんじりの旋回速度と横転リスクの関係を体験する教育用シミュレーター。">
+<meta name="theme-color" content="#0b1420">
+<style>
+:root{font-family:system-ui,-apple-system,"Yu Gothic","Hiragino Kaku Gothic ProN",sans-serif;color:#ecf3f8;background:#0b1420;font-synthesis:none}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 20% 5%,#203044 0%,#0b1420 65%);padding:20px 15px 32px}.wrap{max-width:1310px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin:0 0 17px;flex-wrap:wrap}.eyebrow{letter-spacing:.14em;color:#f8ba6e;font-size:11px;font-weight:850;text-transform:uppercase}h1{font-size:clamp(24px,3vw,34px);line-height:1.2;margin:4px 0 6px;letter-spacing:-.04em}.lead{font-size:13px;color:#a5b4c5;margin:0}.pill{border:1px solid #4c5c70;color:#c6d5e2;border-radius:30px;padding:8px 12px;font-size:12px;font-weight:700;white-space:nowrap}.layout{display:grid;grid-template-columns:minmax(0,1fr) 295px;gap:16px;align-items:stretch}.board{border-radius:20px;overflow:hidden;border:1px solid #3b5363;background:#172a32;box-shadow:0 15px 55px #050b15aa}.stage{position:relative;overflow:hidden}.stage canvas{display:block;width:100%;height:auto;aspect-ratio:940/590}.stage .stage-top{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;pointer-events:none;gap:8px}.chip{border:1px solid #ffffff2e;background:#081b24bb;backdrop-filter:blur(10px);font-size:12px;font-weight:800;padding:9px 12px;border-radius:9px;color:white}.chip span{color:#9eb6c0;font-weight:600}.chip.warn{background:#8e4116d9;border-color:#ffc18a}.chip.danger{background:#a52d36ee;border-color:#ff9d9d;animation:pulse 0.5s infinite alternate}@keyframes pulse{to{opacity:.76}}.overlay{position:absolute;inset:0;background:#081721be;display:flex;align-items:center;justify-content:center;z-index:3;padding:16px;text-align:center;backdrop-filter:blur(4px)}.overlay.hide{display:none}.modal{max-width:490px;background:#132b36f5;padding:25px 28px;border:1px solid #5b7b85;border-radius:19px;box-shadow:0 18px 80px #02090fc4}.modal .symbol{font-size:40px;line-height:1}.modal h2{margin:9px 0 9px;font-size:25px;letter-spacing:-.04em}.modal p{font-size:14px;line-height:1.85;color:#c1d0d6;margin:8px 0 16px}.modal .keyhint{font-size:12px;color:#9cb3bd;background:#061823aa;padding:10px;border-radius:9px;margin-bottom:18px}.mainbtn{border:0;border-radius:11px;padding:13px 26px;font-size:16px;font-weight:850;background:#f6b45b;color:#12212b;cursor:pointer;box-shadow:0 4px 0 #a96929}.mainbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #a96929}.stage-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 16px;color:#9eb0bd;background:#162734;border-top:1px solid #263d49;font-size:12px;flex-wrap:wrap}.stage-bottom strong{color:#dde7f1}.progress{background:#334d59;width:160px;height:6px;display:inline-block;border-radius:20px;overflow:hidden;vertical-align:middle;margin-left:8px}.progress i{display:block;height:100%;width:0;background:#efb35d;transition:width .1s linear}.side{background:#142332;border:1px solid #33485d;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:13px}.hud-title{font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:#8ea2b5;font-weight:800}.speed{position:relative;display:flex;align-items:baseline;gap:5px;margin-top:3px}.speed-number{font-size:65px;line-height:1.06;letter-spacing:-.09em;font-weight:850;font-variant-numeric:tabular-nums}.speed-unit{font-size:15px;color:#a5b7c8}.speed-meter{height:9px;border-radius:50px;background:#263c4d;overflow:hidden;margin-top:5px}.speed-meter .fill{height:100%;width:0;background:linear-gradient(90deg,#52c3bd 10%,#e6b45f 68%,#e75b4c 100%);transition:width .15s}.metric{border-radius:12px;border:1px solid #2f4858;background:#0f1d2a;padding:13px}.metric .m-label{font-size:12px;color:#93aabc;font-weight:700}.metric .m-value{font-size:25px;font-variant-numeric:tabular-nums;font-weight:850;margin-top:3px}.metric .sub{font-size:11px;color:#8ca5b7;line-height:1.5}.status{padding:11px 12px;border-radius:10px;background:#103e40;border:1px solid #227d7b;color:#98e2db;font-size:13px;font-weight:800;line-height:1.6}.status.warn{background:#473417;border-color:#ae7b31;color:#ffe0a0}.status.danger{background:#531d29;border-color:#b94855;color:#ffb8c3}.risk-bar{height:10px;border-radius:30px;background:linear-gradient(90deg,#164f53 0%,#e7b25e 71%,#bd4249 99%);position:relative;margin:11px 0 4px}.risk-pointer{height:17px;width:4px;position:absolute;top:-4px;left:0;background:#fff;border-radius:4px;box-shadow:0 1px 5px #000;transition:left .1s}.controls{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:3px}.control{border:1px solid #7da4a4;border-radius:12px;min-height:75px;background:#194d4d;color:#c5fff2;font-size:17px;font-weight:850;touch-action:none;user-select:none;cursor:pointer;transition:transform .1s,background .1s}.control span{display:block;font-size:12px;font-weight:600;opacity:.8;margin-top:4px}.control.brake{background:#57352a;border-color:#ba7260;color:#ffe2d8}.control.down,.control:active{background:#c29b57;color:#0e1c26;transform:scale(.98)}.secondary-controls{display:flex;gap:8px}.plain-btn{background:#23384a;border:1px solid #40596b;color:#d4dfe9;border-radius:9px;padding:8px 11px;cursor:pointer;flex:1;font-weight:700;font-size:12px}.help{color:#9caebc;font-size:11px;line-height:1.65;margin:0}.notes{margin:15px 0 0;color:#9daeb9;font-size:12px;line-height:1.7}.notes strong{color:#dce7f3}@media(max-width:950px){.layout{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.side .controls{grid-column:1/-1}.side .secondary-controls,.side .help{grid-column:1/-1}.stage canvas{min-height:290px}}@media(max-width:540px){body{padding:12px 9px 28px}.top{gap:5px}.board,.side{border-radius:13px}.stage canvas{min-height:auto}.modal{padding:20px 18px}.modal h2{font-size:21px}.modal p{font-size:12px}.stage-top{top:7px!important;left:7px!important;right:7px!important}.chip{padding:6px 8px;font-size:10px}.side{padding:11px}.speed-number{font-size:50px}.metric .m-value{font-size:21px}.control{min-height:62px}.progress{width:80px}}
+
+/* Keep the post-rollover scene visible without sensational impact effects. */
+.overlay.after-crash{background:#07172485;backdrop-filter:blur(1px);align-items:flex-end;padding-bottom:20px}
+.overlay.after-crash .modal{padding:15px 23px;max-width:465px;background:#112936f2;border-color:#f0b26a}
+.overlay.after-crash .modal .symbol{font-size:26px}
+.overlay.after-crash .modal h2{font-size:22px;margin:4px 0}
+.overlay.after-crash .modal p{font-size:12px;margin:4px 0 10px}
+.overlay.after-crash .keyhint{display:none}
+.replaybtn{background:#2c5261;color:#ecf8fa;border:1px solid #628792;cursor:pointer;margin-left:8px;border-radius:10px;padding:12px 14px;font-weight:800}
+.replaybtn.hide{display:none}
+@media(max-width:540px){.overlay.after-crash{padding-bottom:7px}.overlay.after-crash .modal{padding:10px 14px}.overlay.after-crash .modal p{line-height:1.4}}
+/* On small screens present dialogs over the viewport, rather than clipping them to the map. */
+@media(max-width:540px){
+ .overlay,.overlay.after-crash{position:fixed;inset:0;z-index:30;overflow-y:auto;align-items:center;justify-content:center;padding:14px;background:#081721e8;backdrop-filter:blur(4px)}
+ .overlay .modal,.overlay.after-crash .modal{width:min(100%,380px);max-height:calc(100dvh - 28px);overflow-y:auto;padding:18px 16px}
+ .overlay.after-crash .modal .keyhint{display:none}
+}
+
+</style>
+</head>
+<body><div class="wrap">
+<header class="top"><div><div class="eyebrow">MACHINE DYNAMICS · SIMULATION</div><h1>Danjiri Sim</h1><p class="lead">だんじりの旋回速度と横転リスクを体験する簡易力学シミュレーター</p></div><div class="pill" id="coursePill">コース 1 / 6 · ゆるやかな周回</div></header>
+<div class="layout"><section class="board"><div class="stage"><canvas id="track" width="940" height="590" aria-label="だんじりが走る曲線やS字を含むコース"></canvas><div class="stage-top"><div id="stageStatus" class="chip">🏮 <span>スタート前</span></div><div class="chip">コース <b id="stageNum">1 / 6</b> · 通過カーブ <b id="cornerCounter">0 / 6</b></div></div><div id="overlay" class="overlay"><div class="modal"><div id="modalIcon" class="symbol">🏮</div><h2 id="modalTitle">コース 1：ゆるやかな周回</h2><p id="modalText">曳き手を操作してだんじりを引っ張ります。<b>緩やかな区間で速度を上げ、急な曲線の手前で十分に減速</b>してください。急旋回では横加速度が速度の２乗で増えます。</p><div class="keyhint">キーボード：↑ / W で引く　｜　↓ / S / Space で減速<br>スマホ：画面下の「引く」「減速」を長押し</div><button class="mainbtn" id="goBtn">スタート</button><button class="replaybtn hide" id="replayBtn">↻ 転倒時の挙動を再生</button></div></div></div><div class="stage-bottom"><span>⏱ 経過 <strong id="timer">00:00.0</strong></span><span>走行進捗 <span class="progress"><i id="progressFill"></i></span> <strong id="progressNumber">0%</strong></span><span>ベスト <strong id="best">—</strong></span></div></section>
+<aside class="side"><div><div class="hud-title">曳行スピード</div><div class="speed"><span class="speed-number" id="speed">8.0</span><span class="speed-unit">km/h</span></div><div class="speed-meter"><div class="fill" id="speedFill"></div></div></div><div class="metric"><div class="m-label" id="cornerLabel">次の注意カーブまで</div><div class="m-value" id="cornerDistance">— m</div><div class="sub" id="nextDescription">目安の進入速度 ≤ 14 km/h</div></div><div class="metric"><div class="m-label">旋回中の横転リスク</div><div class="m-value" id="riskValue">0.00 ×</div><div class="risk-bar"><div class="risk-pointer" id="riskPointer"></div></div><div class="sub">1.00超：簡易モデル上の静的横転限界超過</div></div><div class="status" id="statusText">● 安全域です。急カーブ前に減速。</div><div class="controls"><button id="pullBtn" class="control">▲ 引く<span>押している間 加速</span></button><button id="brakeBtn" class="control brake">▼ 減速<span>押している間 制動</span></button></div><div class="secondary-controls"><button id="pauseBtn" class="plain-btn">⏸ 一時停止</button><button id="resetBtn" class="plain-btn">↻ このコースをやり直す</button></div><p class="help">操作を離すと惰性で進みます。ブレーキにも距離が必要です。危険表示は実際の祭礼に使える安全基準ではありません。</p></aside></div>
+<p class="notes"><strong>モデルの仮定：</strong> 山車4,000 kg、車輪間隔1.6 m、重心高さ1.7 m、局所曲率はコースに沿って連続的に変化。横転リスクは横加速度／静的横転限界（<i>v</i>²/<i>r</i> ÷ <i>gb</i>/2<i>h</i>）を表示。さらに簡略化したロール運動を計算しています。参加者の移動、段差、路面変形、綱の張力などは省略した<strong>教育用シミュレーション</strong>です。転倒時の挙動や周囲の人の動きは模式的な表現で、実際の事故の状況や被害を再現・予測するものではありません。</p>
+<p class="notes">Danjiri Sim · 教育・研究目的の簡易モデル · <a href="LICENSE" style="color:#b4ceda">BSD-3-Clause License</a></p>
+</div>
+<script>
+/* SPDX-License-Identifier: BSD-3-Clause */
+(()=>{'use strict';
+const $=id=>document.getElementById(id);
+const cv=$('track'),ctx=cv.getContext('2d');
+const W=940,H=590,g=9.81,b=1.6,h=1.7,scale=13.2;
+const crit=g*b/(2*h);
+// Curved closed routes are sampled from a periodic Catmull–Rom spline.
+// Road geometry, not the vehicle's braking power or mass, sets the challenge.
+const courses=[
+ {name:'ゆるやかな周回',hint:'丸い周回路。大きな曲がりから始めましょう。',points:[[180,157],[386,124],[585,130],[782,158],[827,297],[759,432],[539,469],[332,452],[145,417],[110,277]]},
+ {name:'変化するカーブ',hint:'上下にふくらむ曲線と、長短の異なる旋回があります。',points:[[164,163],[338,133],[513,160],[679,132],[806,186],[819,329],[744,447],[556,467],[375,409],[209,458],[122,365],[111,251]]},
+ {name:'S字の入口',hint:'上側のS字から次のカーブへ。方向転換が続きます。',points:[[157,157],[292,132],[401,208],[524,123],[646,197],[800,156],[826,319],[729,443],[561,473],[374,427],[185,451],[117,335],[117,231]]},
+ {name:'折れ曲がる路地',hint:'急な曲線と短い直線が交互に現れます。',points:[[170,165],[321,126],[450,221],[559,126],[742,147],[818,246],[798,369],[663,449],[536,408],[400,479],[273,398],[134,438],[115,305]]},
+ {name:'連続するS字',hint:'急なカーブの直後に逆方向のカーブが続きます。',points:[[163,170],[292,125],[401,231],[526,115],[647,221],[791,153],[821,296],[754,453],[618,407],[504,483],[388,384],[271,476],[134,422],[108,289]]},
+ {name:'最終・総合コース',hint:'S字、急角度の曲線、短い直線を組み合わせた最終コース。',points:[[158,165],[281,130],[367,219],[463,117],[546,222],[653,129],[798,180],[811,316],[730,459],[630,380],[536,483],[436,387],[326,477],[234,373],[124,423],[113,278]]}
+];
+let level=0,samples=[],total=0,start=0,spectators=[],zones=[],featureEnds=[];
+let state='ready',position=0,travel=0,v=2.2,roll=0,rollVel=0,elapsed=0,passed=0,peak=0,bestTimes={},last=0,uiClock=0;
+let crash=null;
+const keys={pull:false,brake:false};
+const clamp=(x,a=0,c=1)=>Math.max(a,Math.min(c,x));
+const fmt=t=>`${Math.floor(t/60).toString().padStart(2,'0')}:${Math.floor(t%60).toString().padStart(2,'0')}.${Math.floor((t%1)*10)}`;
+const randFactory=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296};
+function splinePoint(p0,p1,p2,p3,t){
+ const t2=t*t,t3=t2*t;
+ return {x:.5*(2*p1[0]+(-p0[0]+p2[0])*t+(2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*t2+(-p0[0]+3*p1[0]-3*p2[0]+p3[0])*t3),
+ y:.5*(2*p1[1]+(-p0[1]+p2[1])*t+(2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*t2+(-p0[1]+3*p1[1]-3*p2[1]+p3[1])*t3)};
+}
+function angleWrap(a){return Math.atan2(Math.sin(a),Math.cos(a))}
+function setupGeometry(){
+ const points=courses[level].points,n=points.length,rough=[];
+ for(let i=0;i<n;i++)for(let j=0;j<44;j++){
+  rough.push(splinePoint(points[(i+n-1)%n],points[i],points[(i+1)%n],points[(i+2)%n],j/44));
+ }
+ // Resample for nearly uniform arclength steps (2.6 canvas pixels).
+ let ext=[...rough,rough[0]],lengths=[0];
+ for(let i=1;i<ext.length;i++)lengths.push(lengths[i-1]+Math.hypot(ext[i].x-ext[i-1].x,ext[i].y-ext[i-1].y));
+ total=lengths[lengths.length-1];
+ const count=Math.round(total/2.6);samples=[];let k=0;
+ for(let j=0;j<count;j++){
+  const d=j*total/count;while(k+1<lengths.length-1&&lengths[k+1]<d)k++;
+  const f=clamp((d-lengths[k])/(lengths[k+1]-lengths[k]));
+  samples.push({x:ext[k].x+(ext[k+1].x-ext[k].x)*f,y:ext[k].y+(ext[k+1].y-ext[k].y)*f,s:d});
+ }
+ for(let j=0;j<count;j++){
+  const before=samples[(j-5+count)%count],after=samples[(j+5)%count];
+  const ang=Math.atan2(after.y-before.y,after.x-before.x);
+  samples[j].angle=ang;
+ }
+ for(let j=0;j<count;j++){
+  const pre=samples[(j-6+count)%count],post=samples[(j+6)%count];
+  samples[j].curvature=angleWrap(post.angle-pre.angle)/(12*total/count);
+ }
+ // Group portions of the road with appreciable curvature into named turns.
+ const threshold=.0056,marked=samples.map(p=>Math.abs(p.curvature)>threshold);
+ // Fill gaps shorter than ~25 px to avoid fragmenting a bend into several labels.
+ for(let j=0;j<count;j++)if(!marked[j]){
+  let gap=0;while(gap<12&&!marked[(j+gap)%count])gap++;
+  if(gap<12&&marked[(j-1+count)%count]&&marked[(j+gap)%count])for(let m=0;m<gap;m++)marked[(j+m)%count]=true;
+ }
+ zones=[];
+ // Parse contiguous marked blocks around a cyclic road.
+ for(let j=0;j<count;j++){
+  if(marked[j]&&!marked[(j-1+count)%count]){
+   let last=j;while(marked[(last+1)%count]&&((last+1)%count)!==j)last=(last+1)%count;
+   const length=(last-j+count)%count+1;
+   if(length>=7)zones.push({from:j*total/count,to:((last+1)%count)*total/count,length:length*total/count});
+  }
+ }
+ zones.sort((a,b)=>a.from-b.from);
+ // Begin in the calmest portion of the first upper straight, not in a tight curve.
+ let best=-Infinity,startIdx=0;
+ const targetX=(points[0][0]+points[1][0])/2,targetY=(points[0][1]+points[1][1])/2;
+ for(let j=0;j<count;j++){
+  const p=samples[j];
+  const score=-Math.pow((p.x-targetX)/120,2)-Math.pow((p.y-targetY)/120,2)
+     -130*Math.abs(p.curvature)+Math.max(0,Math.cos(p.angle))*.6;
+  if(score>best){best=score;startIdx=j}
+ }
+ start=startIdx*total/count;
+ featureEnds=zones.map(z=>(z.to-start+total)%total).filter(d=>d>1).sort((a,b)=>a-b);
+ spectators=makeSpectators();
+}
+function getPose(s){
+ const ss=((s%total)+total)%total,step=total/samples.length,ii=Math.floor(ss/step),q=ss/step-ii;
+ const a=samples[ii%samples.length],b=samples[(ii+1)%samples.length];
+ return{x:a.x+(b.x-a.x)*q,y:a.y+(b.y-a.y)*q,
+  angle:a.angle+angleWrap(b.angle-a.angle)*q,
+  curvature:a.curvature+(b.curvature-a.curvature)*q,
+  radius:1/Math.max(.00025,Math.abs(a.curvature+(b.curvature-a.curvature)*q)),
+  isCurve:Math.abs(a.curvature+(b.curvature-a.curvature)*q)>.0056};
+}
+function nextCorner(){
+ const pose=getPose(position),pos=((position%total)+total)%total;
+ // Look for the next *tight* curvature, avoiding distant, harmless bends.
+ let first=null;
+ for(let d=0;d<Math.min(total,650);d+=5){
+  const p=getPose(pos+d),k=Math.abs(p.curvature);
+  if(k>.0056){
+   if(!first||k>first.k*1.65&&d<first.d+55)first={d,k,p};
+   if(d>first.d+38)break;
+  }
+ }
+ if(!first)first={d:0,k:Math.abs(pose.curvature),p:pose};
+ return{distance:first.d/scale,radius:1/Math.max(first.k,.00025),curve:pose.isCurve,side:first.p.curvature>=0?'右':'左'};
+}
+function makeSpectators(){
+ // Small groups of individuals spread around the road, without grandstands.
+ const random=randFactory(20261012+level*997),people=[];
+ for(let i=0;i<155;i++){
+  const s=((i+random())/155)*total,p=getPose(s),side=random()<.5?-1:1;
+  const dist=52+random()*46;
+  const x=p.x-Math.sin(p.angle)*side*dist,y=p.y+Math.cos(p.angle)*side*dist;
+  if(x<12||x>W-12||y<13||y>H-13)continue;
+  // A spectator must not accidentally be placed on another section of the road.
+  if(samples.some((r,j)=>j%3===0&&Math.hypot(r.x-x,r.y-y)<47))continue;
+  people.push({x,y,color:['#f2cb77','#e2eeea','#9abbd2','#e6a99e','#dddda2'][Math.floor(random()*5)],size:2.7+random()*1.1});
+ }
+ return people;
+}
+function showReady(){
+ $('overlay').classList.remove('hide','after-crash');$('replayBtn').classList.add('hide');
+ $('modalIcon').textContent='🏮';
+ $('modalTitle').textContent=`コース ${level+1}：${courses[level].name}`;
+ $('modalText').innerHTML=`${courses[level].hint}。<br><b>緩い区間で加速し、急カーブの手前で減速</b>してください。速度が2倍になると、同じ曲線で横加速度は4倍になります。`;
+ $('goBtn').textContent=level===0?'スタート':'このコースを開始';
+}
+function reset(){
+ crash=null;position=start;travel=0;v=2.2;roll=0;rollVel=0;elapsed=0;passed=0;peak=0;last=0;uiClock=0;state='ready';
+ resetStatus();$('pauseBtn').textContent='⏸ 一時停止';showReady();updateHUD();render(0);
+}
+function loadCourse(i){level=i;setupGeometry();reset()}
+function startGame(){if(state!=='ready')return;resetStatus();$('overlay').classList.add('hide');state='running';last=0;requestAnimationFrame(frame)}
+function clearPressed(){$('pullBtn').classList.remove('down');$('brakeBtn').classList.remove('down')}
+function resetStatus(){keys.pull=false;keys.brake=false;clearPressed()}
+function finish(failed){
+ state=failed?'crashed':'finished';resetStatus();
+ $('overlay').classList.remove('hide');$('overlay').classList.toggle('after-crash',failed);
+ $('replayBtn').classList.toggle('hide',!failed);
+ $('modalIcon').textContent=failed?'⚠':'✓';
+ if(failed){
+  $('modalTitle').textContent=`コース ${level+1}：横転・コースアウト`;
+  $('modalText').innerHTML=`コーナーで横転し、路肩まで滑走しました。進入速度を見直してください。<br><b>最高速度 ${(peak*3.6).toFixed(1)} km/h</b> ・ 通過カーブ ${passed}/${featureEnds.length}`;
+  $('goBtn').textContent='このコースを再挑戦';
+ }else{
+  if(bestTimes[level]==null||elapsed<bestTimes[level])bestTimes[level]=elapsed;
+  const lastCourse=level===courses.length-1;
+  $('modalTitle').textContent=lastCourse?'全6コースを完走！':`コース ${level+1} クリア！`;
+  $('modalText').innerHTML=`コース全体を横転せず走りきりました。<br><b>タイム ${fmt(elapsed)}</b> ・ 最高速度 ${(peak*3.6).toFixed(1)} km/h`+
+   (lastCourse?'<br>すべてのコースをクリアしました。':`<br>次は「${courses[level+1].name}」。${courses[level+1].hint}。`);
+  $('goBtn').textContent=lastCourse?'最初のコースに戻る':'次のコースへ →';
+ }
+ updateHUD();
+}
+function beginCrash(pose){
+ // The cart skids toward the outside of the present bend, with no collision depicted.
+ const direction=Math.sign(pose.curvature)||1;
+ const outwardX=Math.sin(pose.angle)*direction,outwardY=-Math.cos(pose.angle)*direction;
+ const ahead=22,drift=91;
+ const x=clamp(pose.x+outwardX*drift+Math.cos(pose.angle)*ahead,31,W-31);
+ const y=clamp(pose.y+outwardY*drift+Math.sin(pose.angle)*ahead,31,H-31);
+ crash={t:0,from:{...pose},to:{x,y},peakSpeed:peak,side:Math.sign(pose.curvature)||1};
+ state='crashing';resetStatus();updateHUD();
+}
+function currentCrashPose(){
+ if(!crash)return null;
+ const q=clamp(crash.t/1.35),u=1-Math.pow(1-q,1.4),from=crash.from,to=crash.to;
+ const dx=to.x-from.x,dy=to.y-from.y,mag=Math.hypot(dx,dy)||1;
+ const bend=13*Math.sin(q*Math.PI);
+ return{x:from.x+dx*u-dy/mag*bend,y:from.y+dy*u+dx/mag*bend,angle:from.angle+q*.7,sideways:q};
+}
+function tickCrash(dt){if(!crash)return;crash.t+=dt;if(crash.t>=2.55){crash.t=2.55;finish(true)}}
+function physics(dt){
+ if(state!=='running')return;
+ const accel=keys.brake?-2.0:(keys.pull?.90:-.035);
+ v=Math.min(7.6,Math.max(0,v+accel*dt));if(v<.04&&keys.brake)v=0;
+ peak=Math.max(peak,v);position+=v*scale*dt;travel+=v*scale*dt;elapsed+=dt;
+ const pose=getPose(position);
+ const signedA=v*v*pose.curvature*scale,half=b/2,I=h*h+half*half;
+ // The load-transfer side changes on left/right bends; leaning has finite inertia.
+ const side=Math.sign(Math.abs(roll)>.003?roll:signedA)||1;
+ if(Math.abs(roll)>.0001||Math.abs(signedA)>crit){
+  const angle=Math.abs(roll),c=Math.cos(angle),s=Math.sin(angle);
+  const effective=signedA*side;
+  const alpha=side*((effective*(h*c+half*s)-g*(half*c-h*s))/I)-1.1*rollVel;
+  const prev=roll;rollVel+=alpha*dt;roll+=rollVel*dt;
+  if((prev>0&&roll<0||prev<0&&roll>0)&&Math.abs(signedA)<crit){roll=0;rollVel=0}
+ }else{roll=0;rollVel=0}
+ passed=featureEnds.filter(d=>travel>=d).length;
+ if(Math.abs(roll)>.47){beginCrash(pose);return}
+ if(travel>=total){passed=featureEnds.length;finish(false)}
+}
+function roadPath(){
+ ctx.beginPath();for(let j=0;j<samples.length;j++){
+  const p=samples[j];if(j===0)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y);
+ }ctx.closePath();
+}
+function drawPerson(x,y,angle,team){
+ ctx.save();ctx.translate(x,y);ctx.rotate(angle);
+ ctx.fillStyle='#081a20';ctx.beginPath();ctx.arc(0,2,8,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle=team?'#eff8ff':'#f4b459';ctx.fillRect(-5,-7,10,13);
+ ctx.fillStyle='#e3b090';ctx.beginPath();ctx.arc(0,0,4.5,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#dfe8e2';ctx.fillRect(-4,-4,8,2);ctx.restore();
+}
+function drawSpectators(){
+ const p=crash?currentCrashPose():null;
+ for(const s of spectators){
+  let x=s.x,y=s.y;
+  if(p&&crash.t<2.4){
+   const dx=x-p.x,dy=y-p.y,dist=Math.hypot(dx,dy);
+   if(dist<73){const f=clamp((crash.t-.15)/1.2)*clamp((73-dist)/73);x+=(dx/(dist||1))*f*24;y+=(dy/(dist||1))*f*24}
+  }
+  ctx.save();ctx.translate(x,y);
+  ctx.strokeStyle='#142a30';ctx.lineWidth=1.9;ctx.beginPath();ctx.moveTo(0,2);ctx.lineTo(0,8);ctx.stroke();
+  ctx.fillStyle=s.color;ctx.beginPath();ctx.arc(0,1,s.size,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#e8c2a0';ctx.beginPath();ctx.arc(0,-3,s.size*.57,0,Math.PI*2);ctx.fill();ctx.restore();
+ }
+}
+function drawBackground(){
+ ctx.fillStyle='#193d3b';ctx.fillRect(0,0,W,H);
+ ctx.strokeStyle='#ffffff06';ctx.lineWidth=1;
+ for(let x=0;x<W;x+=50){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+ for(let y=0;y<H;y+=50){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+ ctx.textAlign='center';ctx.fillStyle='#54766670';ctx.font='bold 40px system-ui';ctx.fillText('DANJIRI SIM',470,280);
+ ctx.font='bold 18px system-ui';ctx.fillText(`COURSE ${level+1} / ${courses.length}`,470,312);
+ for(let i=0;i<14;i++){
+  const x=142+i*49;ctx.beginPath();ctx.arc(x,24,6,0,Math.PI*2);
+  ctx.fillStyle=i%2?'#f8bd61':'#e98b64';ctx.shadowBlur=9;ctx.shadowColor='#f8b45e';ctx.fill();ctx.shadowBlur=0;
+ }
+ ctx.lineCap='round';ctx.lineJoin='round';
+ for(const [width,color] of [[87,'#081d22'],[80,'#9eb9ac'],[73,'#38535a'],[67,'#263a42']]){
+  roadPath();ctx.lineWidth=width;ctx.strokeStyle=color;ctx.stroke();
+ }
+ roadPath();ctx.setLineDash([14,19]);ctx.lineWidth=1.7;ctx.strokeStyle='#799aa17f';ctx.stroke();ctx.setLineDash([]);
+ // Draw caution ticks at the greatest bends, no spectator seating.
+ for(const zone of zones){
+  const q=getPose(zone.from+(zone.length/2));
+  ctx.save();ctx.translate(q.x,q.y);ctx.rotate(q.angle);
+  ctx.strokeStyle='#d88d59d0';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(-6,-43);ctx.lineTo(6,-43);ctx.moveTo(-6,43);ctx.lineTo(6,43);ctx.stroke();ctx.restore();
+ }
+ ctx.save();const p=getPose(start);ctx.translate(p.x,p.y);ctx.rotate(p.angle);
+ for(let j=-3;j<3;j++)for(let i=0;i<2;i++){ctx.fillStyle=((i+j)&1)?'#e3e9df':'#17272c';ctx.fillRect(-5+i*5,j*12,5,12)}
+ ctx.restore();
+ drawSpectators();
+}
+function drawFloat(x,y,angle,ratio,theta){
+ ctx.save();ctx.translate(x,y);ctx.rotate(angle);
+ ctx.shadowBlur=15;ctx.shadowColor='#080d13ad';ctx.fillStyle='#0b1c24';ctx.fillRect(-31,-24,62,48);ctx.shadowBlur=0;
+ const slope=clamp(theta*2.1,-.9,.9);
+ ctx.fillStyle='#7a432d';ctx.fillRect(-28,-20,56,40);
+ ctx.fillStyle='#171f25';for(const a of [-18,18])for(const y of [-26,26]){
+  ctx.beginPath();ctx.ellipse(a,y,8,7,0,0,Math.PI*2);ctx.fill();
+ }
+ ctx.save();ctx.translate(0,-slope*12);
+ ctx.fillStyle='#bf7436';ctx.fillRect(-29,-22,58,44);
+ ctx.fillStyle='#d7a755';ctx.fillRect(-34,-25,68,50);
+ ctx.fillStyle='#59382b';ctx.fillRect(-26,-18,52,36);
+ ctx.fillStyle='#ac622f';ctx.fillRect(-18,-13,36,26);
+ ctx.fillStyle='#e1ae54';ctx.fillRect(-32,-3,64,6);ctx.fillRect(-3,-23,6,46);
+ ctx.fillStyle='#e3c177';for(const i of [-22,22])for(const j of [-15,15])ctx.fillRect(i-2,j-2,5,5);
+ ctx.restore();ctx.restore();
+ if(state==='running'&&(ratio>.85||theta>.07)){
+  ctx.strokeStyle=ratio>1?'#ee6666':'#f4bd68';ctx.lineWidth=3;ctx.setLineDash([5,7]);
+  ctx.beginPath();ctx.arc(x,y,49+Math.sin(performance.now()/100)*2,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+ }
+}
+function drawCrash(){
+ const p=currentCrashPose();if(!p)return;
+ const q=clamp(crash.t/1.35);
+ ctx.save();ctx.strokeStyle='#1421248a';ctx.lineWidth=4;ctx.setLineDash([7,10]);
+ ctx.beginPath();ctx.moveTo(crash.from.x,crash.from.y);
+ ctx.quadraticCurveTo((crash.from.x+crash.to.x)/2,(crash.from.y+crash.to.y)/2,p.x,p.y);ctx.stroke();ctx.setLineDash([]);
+ ctx.restore();
+ const theta=(crash.side||1)*(.47+Math.min(.95,q*1.2));
+ drawFloat(p.x,p.y,p.angle,0,theta);
+}
+function drawTeam(moving){
+ const scatter=crash?clamp((crash.t-.1)/.9)*24:0;
+ if(moving){
+  for(const side of [-14,14]){
+   ctx.strokeStyle='#f4cd84';ctx.lineWidth=2.4;ctx.beginPath();
+   for(let d=21;d<=125;d+=7){const q=getPose(position+d);
+    const x=q.x-Math.sin(q.angle)*side,y=q.y+Math.cos(q.angle)*side;
+    if(d===21)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.stroke();
+  }
+ }
+ for(let row=5;row>=0;row--){const q=getPose(position+37+row*15);
+  for(const side of [-1,1]){
+   const offset=side*(15+scatter),x=q.x-Math.sin(q.angle)*offset,y=q.y+Math.cos(q.angle)*offset;
+   drawPerson(x,y,q.angle,true);
+  }
+ }
+}
+function render(){
+ ctx.clearRect(0,0,W,H);drawBackground();
+ const failed=state==='crashed'||state==='crashing';
+ drawTeam(!failed);
+ if(failed)drawCrash();
+ else{const p=getPose(position);const ratio=v*v*Math.abs(p.curvature)*scale/crit;drawFloat(p.x,p.y,p.angle,ratio,roll)}
+}
+function updateHUD(){
+ const speed=v*3.6,pose=getPose(position),nc=nextCorner();
+ const radiusM=nc.radius/scale,vcrit=Math.sqrt(crit*radiusM),safeV=.78*vcrit;
+ const risk=v*v*Math.abs(pose.curvature)*scale/crit;
+ const upcomingRisk=v*v/(radiusM*crit);
+ const stopping=Math.max(0,(v*v-safeV*safeV)/(2*2.0))+v*.65+3;
+ let short='走行中',status='● 安全域。次の曲線に備えてください。',css='status';
+ if(state==='ready'){short='スタート前';status='● 曲線の手前で速度を落としてください。'}
+ else if(state==='paused'){short='一時停止';status='Ⅱ 一時停止中'}
+ else if(state==='crashing'){short='横転・コースアウト';status='⚠ 横転が発生しました';css+=' danger'}
+ else if(state==='crashed'){short='横転・コースアウト';status='⚠ 進入速度を見直してください';css+=' danger'}
+ else if(state==='finished'){short='完走';status='✓ コースをクリアしました'}
+ else if(risk>=1){short='横転危険';status='⚠ 横転限界を超える横加速度です';css+=' danger'}
+ else if(risk>=.72){short='曲線走行：注意';status='▲ 横転限界に接近中';css+=' warn'}
+ else if(upcomingRisk>1&&nc.distance<stopping){short='減速！';status='⚠ このままでは危険な進入速度です';css+=' danger'}
+ else if(upcomingRisk>.65&&nc.distance<stopping+12){short='前方：減速';status='▲ 早めの減速が必要です';css+=' warn'}
+ $('speed').textContent=speed.toFixed(1);$('speedFill').style.width=Math.min(100,speed/27*100)+'%';
+ $('cornerLabel').textContent=pose.isCurve?'旋回中のカーブ':'次の注意カーブまで';
+ $('cornerDistance').textContent=pose.isCurve?'旋回中':nc.distance.toFixed(0)+' m';
+ $('nextDescription').textContent=`${nc.side}カーブ・半径 約${radiusM.toFixed(1)} m ／ 目安 ${Math.floor(safeV*3.6)} km/h 以下`;
+ $('riskValue').textContent=risk.toFixed(2)+' ×';$('riskPointer').style.left=Math.min(99,100*risk/1.3)+'%';
+ $('statusText').textContent=status;$('statusText').className=css;
+ $('stageStatus').innerHTML='🏮 <span>'+short+'</span>';
+ $('stageStatus').className='chip'+(css.includes('danger')?' danger':css.includes('warn')?' warn':'');
+ $('cornerCounter').textContent=passed+' / '+featureEnds.length;$('timer').textContent=fmt(elapsed);
+ $('progressFill').style.width=Math.min(100,travel/total*100)+'%';
+ $('progressNumber').textContent=Math.min(100,travel/total*100).toFixed(0)+'%';
+ $('best').textContent=bestTimes[level]==null?'—':fmt(bestTimes[level]);
+ $('coursePill').textContent=`コース ${level+1} / ${courses.length} · ${courses[level].name}`;
+ $('stageNum').textContent=`${level+1} / ${courses.length}`;
+}
+function frame(ts){
+ if(state!=='running'&&state!=='crashing')return;
+ if(last===0)last=ts;
+ const dt=Math.min(.06,(ts-last)/1000);last=ts;let left=dt;
+ while(left>0&&(state==='running'||state==='crashing')){
+  const step=Math.min(left,.012);if(state==='running')physics(step);else tickCrash(step);left-=step;
+ }
+ render();uiClock+=dt;if(uiClock>.075){updateHUD();uiClock=0}
+ if(state==='running'||state==='crashing')requestAnimationFrame(frame);
+}
+function press(el,action){
+ el.addEventListener('pointerdown',e=>{e.preventDefault();if(state==='running'){keys[action]=true;el.classList.add('down');el.setPointerCapture(e.pointerId)}});
+ const clear=()=>{keys[action]=false;el.classList.remove('down')};
+ el.addEventListener('pointerup',clear);el.addEventListener('pointercancel',clear);el.addEventListener('lostpointercapture',clear);
+}
+press($('pullBtn'),'pull');press($('brakeBtn'),'brake');
+window.addEventListener('keydown',e=>{
+ if(['ArrowUp','ArrowDown','Space','KeyW','KeyS'].includes(e.code)){
+  e.preventDefault();if(state!=='running')return;
+  if(['ArrowUp','KeyW'].includes(e.code)){keys.pull=true;$('pullBtn').classList.add('down')}
+  else{keys.brake=true;$('brakeBtn').classList.add('down')}
+ }
+ if(e.code==='KeyP'&&!e.repeat)togglePause();
+ if(e.code==='KeyR'&&!e.repeat)reset();
+ if(e.code==='Enter'&&state==='ready')startGame();
+});
+window.addEventListener('keyup',e=>{
+ if(['ArrowUp','KeyW'].includes(e.code)){keys.pull=false;$('pullBtn').classList.remove('down')}
+ if(['ArrowDown','KeyS','Space'].includes(e.code)){keys.brake=false;$('brakeBtn').classList.remove('down')}
+});
+window.addEventListener('blur',resetStatus);
+function togglePause(){
+ if(state==='running'){state='paused';resetStatus();$('pauseBtn').textContent='▶ 再開';updateHUD()}
+ else if(state==='paused'){state='running';$('pauseBtn').textContent='⏸ 一時停止';last=0;requestAnimationFrame(frame);updateHUD()}
+}
+$('goBtn').addEventListener('click',()=>{
+ if(state==='finished'){loadCourse(level===courses.length-1?0:level+1);startGame()}
+ else if(state==='crashed'){reset();startGame()}
+ else if(state==='ready')startGame();
+});
+$('replayBtn').addEventListener('click',()=>{
+ if(!crash||state!=='crashed')return;crash.t=0;state='crashing';last=0;$('overlay').classList.add('hide');requestAnimationFrame(frame)
+});
+$('pauseBtn').addEventListener('click',togglePause);
+$('resetBtn').addEventListener('click',reset);
+loadCourse(0);
+})();
+
+</script>
+</body></html>
